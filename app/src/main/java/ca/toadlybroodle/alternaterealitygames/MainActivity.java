@@ -1,13 +1,16 @@
 package ca.toadlybroodle.alternaterealitygames;
 
+import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -17,15 +20,22 @@ public class MainActivity extends AppCompatActivity {
     public static final String MY_PREFS_NAME = "MyPrefsFile";
 
     private static FirebaseUser mFirebaseUser;
+
     private static Player mPlayer;
 
-    private static LocationActivity mLocationActivity;
+    FragmentManager mFragmentManager;
+    FragmentTransaction fragmentTransaction;
+    LocationActivity mLocationActivity;
+    SupportMapFragment mMapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // prepare fragment stuffs
+        mFragmentManager = getSupportFragmentManager();
+        mMapFragment = new MapsFragment();
 
         // check for signed in user
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -62,9 +72,13 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
             case R.id.menu_map:
-                // TODO this is a fragment NOT an activity, have to treat it differently or CRASH
-                Intent _MapsActivity = new Intent(getApplicationContext(), MapsActivity.class);
-                startActivity(_MapsActivity);
+                // Begin the transaction
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                // Replace the contents of the container with the new fragment
+                ft.replace(R.id.map_placeholder, mMapFragment);
+                // or ft.add(R.id.your_placeholder, new FooFragment());
+                // Complete the changes added above
+                ft.commit();
                 return true;
             case R.id.menu_settings:
                 Intent _SettingsActivity = new Intent(getApplicationContext(), SettingsActivity.class);
