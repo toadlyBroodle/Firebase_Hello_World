@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference android:title="@string/prefs_support" >
+        <intent android:action="android.intent.action.VIEW"
+            android:data="http://toadlybroodle.ca/portfolio/apps/" />
+    </Preference>
+</PreferenceScreen>
