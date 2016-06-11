@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -28,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private static FirebaseUser mFirebaseUser;
     private static Player mPlayer;
 
-    private static LocationActivity mLocationActivity;
+    private static LocationFragment mLocationActivity;
 
     /** drawer implementation copied from example at https://github.com/codepath/android_guides/wiki/Fragment-Navigation-Drawer */
     private DrawerLayout mDrawer;
@@ -122,22 +121,17 @@ public class MainActivity extends AppCompatActivity {
     public void selectDrawerItem(MenuItem menuItem) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Fragment fragment = null;
-        Class fragmentClass;
+        Class fragmentClass = null;
         switch(menuItem.getItemId()) {
             case R.id.menu_account:
                 // TODO show account page
                 break;
             case R.id.menu_location:
                 // take care of location permissions, settings, and updating
-                if (mLocationActivity == null) {
-                    Intent _LocationActivity = new Intent(getApplicationContext(), LocationActivity.class);
-                    startActivity(_LocationActivity);
-                }
+                fragmentClass = LocationFragment.class;
                 break;
             case R.id.menu_map:
-                // TODO this is a fragment NOT an activity, have to treat it differently or CRASH
-                Intent _MapsActivity = new Intent(getApplicationContext(), MapsActivity.class);
-                startActivity(_MapsActivity);
+                fragmentClass = MapsFragment.class;
                 break;
             case R.id.menu_settings:
                 Intent _SettingsActivity = new Intent(getApplicationContext(), SettingsActivity.class);
@@ -150,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 // TODO send to ratings page
                 break;
             default:
-                return super.onOptionsItemSelected(item);
+                fragmentClass = MainActivity.class;
 
 /**            case R.id.nav_first_fragment:
                 fragmentClass = FirstFragment.class;
@@ -173,7 +167,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Insert the fragment by replacing any existing fragment
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+        fragmentManager.beginTransaction()
+                .replace(R.id.flContent, fragment)
+                .addToBackStack(Integer.toString(fragment.getId()))
+                .commit();
 
         // Highlight the selected item has been done by NavigationView
         menuItem.setChecked(true);

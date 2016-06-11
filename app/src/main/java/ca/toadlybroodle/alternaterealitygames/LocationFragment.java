@@ -4,12 +4,20 @@ package ca.toadlybroodle.alternaterealitygames;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,7 +54,7 @@ import java.util.Date;
  * to invoke a dialog without requiring the developer to understand which settings are needed for
  * different Location requirements.
  */
-public class LocationActivity extends AppCompatActivity implements
+public class LocationFragment extends Fragment implements
         LocationListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -55,14 +63,11 @@ public class LocationActivity extends AppCompatActivity implements
 
     protected static final String TAG = "FuckMnAct";
 
-
-    // Keys for storing activity state in the Bundle.
-    protected final static String REQUESTING_LOCATION_UPDATES_KEY = "requesting-location-updates-key";
-    protected final static String LOCATION_KEY = "location-key";
-    protected final static String LAST_UPDATED_TIME_STRING_KEY = "last-updated-time-string-key";
+    protected static FragmentActivity parActiv;
+    protected static LinearLayout locationLayout;
 
     // Constant used in the location settings dialog.
-    protected static final int REQUEST_CHECK_SETTINGS = 0x1;
+    protected static final int REQUEST_CHECK_LOCATION_SETTINGS = 0x1;
 
 
     // The desired interval for location updates. Inexact. Updates may be more or less frequent.
@@ -109,26 +114,30 @@ public class LocationActivity extends AppCompatActivity implements
      * Start Updates and Stop Updates buttons.
      */
     protected Boolean mRequestingLocationUpdates;
+    // location permission status
 
     /**
      * Time when the location was updated represented as a String.
      */
     protected String mLastUpdateTime;
 
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_location);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
 
-        findViewById(R.id.start_updates_button).setOnClickListener(this);
-        findViewById(R.id.stop_updates_button).setOnClickListener(this);
+        parActiv = super.getActivity();
+        locationLayout    = (LinearLayout) inflater.inflate(R.layout.fragment_location, container, false);
+
+        parActiv.findViewById(R.id.start_updates_button).setOnClickListener(this);
+        parActiv.findViewById(R.id.stop_updates_button).setOnClickListener(this);
 
         // Locate the UI widgets.
-        mStartUpdatesButton = (Button) findViewById(R.id.start_updates_button);
-        mStopUpdatesButton = (Button) findViewById(R.id.stop_updates_button);
-        mLatitudeTextView = (TextView) findViewById(R.id.latitude_text);
-        mLongitudeTextView = (TextView) findViewById(R.id.longitude_text);
-        mLastUpdateTimeTextView = (TextView) findViewById(R.id.last_update_time_text);
+        mStartUpdatesButton = (Button) parActiv.findViewById(R.id.start_updates_button);
+        mStopUpdatesButton = (Button) parActiv.findViewById(R.id.stop_updates_button);
+        mLatitudeTextView = (TextView) parActiv.findViewById(R.id.latitude_text);
+        mLongitudeTextView = (TextView) parActiv.findViewById(R.id.longitude_text);
+        mLastUpdateTimeTextView = (TextView) parActiv.findViewById(R.id.last_update_time_text);
 
         // Set labels.
         mLatitudeLabel = getResources().getString(R.string.latitude_label);
@@ -146,6 +155,8 @@ public class LocationActivity extends AppCompatActivity implements
         buildGoogleApiClient();
         createLocationRequest();
         buildLocationSettingsRequest();
+
+        return locationLayout;
     }
 
     /**
@@ -184,7 +195,7 @@ public class LocationActivity extends AppCompatActivity implements
      */
     protected synchronized void buildGoogleApiClient() {
         Log.i(TAG, "Building GoogleApiClient");
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
+        mGoogleApiClient = new GoogleApiClient.Builder(parActiv)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
@@ -254,7 +265,7 @@ public class LocationActivity extends AppCompatActivity implements
      * settings dialog to the user.
      */
     @Override
-    public void onResult(LocationSettingsResult locationSettingsResult) {
+    public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
         final Status status = locationSettingsResult.getStatus();
         switch (status.getStatusCode()) {
             case LocationSettingsStatusCodes.SUCCESS:
@@ -268,7 +279,7 @@ public class LocationActivity extends AppCompatActivity implements
                 try {
                     // Show the dialog by calling startResolutionForResult(), and check the result
                     // in onActivityResult().
-                    status.startResolutionForResult(LocationActivity.this, REQUEST_CHECK_SETTINGS);
+                    status.startResolutionForResult(parActiv, REQUEST_CHECK_LOCATION_SETTINGS);
                 } catch (IntentSender.SendIntentException e) {
                     Log.i(TAG, "PendingIntent unable to execute request.");
                 }
@@ -276,15 +287,19 @@ public class LocationActivity extends AppCompatActivity implements
             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                 Log.i(TAG, "Location settings are inadequate, and cannot be fixed here. Dialog " +
                         "not created.");
+                // send toast to enable location updates externally in google settings
+                Toast.makeText(parActiv, getResources().getString(R.string.change_location_settings_message),
+                        Toast.LENGTH_SHORT).show();
+
                 break;
         }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             // Check for the integer request code originally supplied to startResolutionForResult().
-            case REQUEST_CHECK_SETTINGS:
+            case REQUEST_CHECK_LOCATION_SETTINGS:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         Log.i(TAG, "User agreed to make required location settings changes.");
@@ -330,13 +345,21 @@ public class LocationActivity extends AppCompatActivity implements
      * Requests location updates from the FusedLocationApi.
      */
     protected void startLocationUpdates() {
+
+        // make sure has fine and coarse location permissions before requesting location updates
+        if (ActivityCompat.checkSelfPermission(parActiv, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(parActiv, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // request the missing permissions and handle the case where the user grants the permission
+            checkLocationSettings();
+            return;
+        }
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 mGoogleApiClient,
                 mLocationRequest,
                 this
         ).setResultCallback(new ResultCallback<Status>() {
             @Override
-            public void onResult(Status status) {
+            public void onResult(@NonNull Status status) {
                 mRequestingLocationUpdates = true;
                 setButtonsEnabledState();
             }
@@ -391,10 +414,10 @@ public class LocationActivity extends AppCompatActivity implements
         // recommended in applications that request frequent location updates.
         LocationServices.FusedLocationApi.removeLocationUpdates(
                 mGoogleApiClient,
-                (com.google.android.gms.location.LocationListener) this
+                this
         ).setResultCallback(new ResultCallback<Status>() {
             @Override
-            public void onResult(Status status) {
+            public void onResult(@NonNull Status status) {
                 mRequestingLocationUpdates = false;
                 setButtonsEnabledState();
             }
@@ -402,7 +425,7 @@ public class LocationActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
     }
@@ -419,7 +442,7 @@ public class LocationActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         // Stop location updates to save battery, but don't disconnect the GoogleApiClient object.
         if (mGoogleApiClient.isConnected()) {
@@ -428,7 +451,7 @@ public class LocationActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
         mGoogleApiClient.disconnect();
     }
@@ -466,7 +489,7 @@ public class LocationActivity extends AppCompatActivity implements
         mCurrentLocation = location;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         updateLocationUI();
-        Toast.makeText(this, getResources().getString(R.string.location_updated_message),
+        Toast.makeText(parActiv, getResources().getString(R.string.location_updated_message),
                 Toast.LENGTH_SHORT).show();
     }
 
@@ -476,7 +499,7 @@ public class LocationActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult result) {
+    public void onConnectionFailed(@NonNull ConnectionResult result) {
         // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
         // onConnectionFailed.
         Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
