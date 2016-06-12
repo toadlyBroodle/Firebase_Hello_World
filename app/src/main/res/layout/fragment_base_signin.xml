@@ -9,12 +9,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:theme="@style/ThemeOverlay.FirebaseButton"
         android:text="@string/sign_in_with_google_account"/>
     <Button
         android:id="@+id/base_email_sign_in_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:theme="@style/ThemeOverlay.FirebaseButton"
         android:layout_below="@id/base_google_sign_in_button"
         android:text="@string/sign_in_with_email_address"/>
 

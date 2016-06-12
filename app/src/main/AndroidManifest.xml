@@ -51,10 +51,10 @@
             </intent-filter>
         </activity>
 
-        <!-- set theme to have action bar -->
+        <!-- settings is an activity not a fragment because PreferenceFragment not supported in android.support.v4-->
         <activity
             android:name=".SettingsActivity"
-            android:theme="@style/Base.Theme.AppCompat.Light.DarkActionBar"
+            android:theme="@style/SettingsTheme"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

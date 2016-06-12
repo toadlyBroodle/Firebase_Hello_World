@@ -7,4 +7,9 @@
     <color name="grey_100">#F5F5F5</color>
     <color name="grey_300">#E0E0E0</color>
 
+    <color name="firebaseColorPrimary">#039BE5</color>
+    <color name="firebaseColorPrimaryDark">#0288D1</color>
+    <color name="firebaseColorAccent">#FFA000</color>
+
+
 </resources>
