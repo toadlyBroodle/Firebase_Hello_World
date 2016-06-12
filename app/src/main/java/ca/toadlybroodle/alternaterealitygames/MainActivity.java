@@ -70,8 +70,7 @@ public class MainActivity extends AppCompatActivity implements
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         // if user not signed in, then start base sign in activity
         if (mFirebaseUser == null) {
-            Intent _BaseSignInActivity = new Intent(getApplicationContext(), BaseSignInFragment.class);
-            startActivity(_BaseSignInActivity);
+            replaceFragment(BaseSignInFragment.class);
         }
 
 
@@ -165,12 +164,12 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private boolean replaceFragment(Class fragClass) {
-        // try to destroy last active fragment to avoid id conflicts
-        try {
-           // mFragMan.beginTransaction().remove(lastActiveFragment).commit();
+        // try to destroy last active fragment to avoid id conflicts TODO need this?
+/*        try {
+            mFragMan.beginTransaction().remove(lastActiveFragment).commit();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
         // try to replace fragment
         Fragment frag;
         try {
