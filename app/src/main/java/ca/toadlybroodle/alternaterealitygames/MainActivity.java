@@ -83,12 +83,12 @@ public class MainActivity extends AppCompatActivity implements MapsFragment.OnIt
         return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open,  R.string.drawer_close);
     }
 
-    @Override
+/*    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         return true;
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -162,6 +162,8 @@ public class MainActivity extends AppCompatActivity implements MapsFragment.OnIt
                 .replace(R.id.placeholder_for_fragments, fragment)
                 .addToBackStack(Integer.toString(fragment.getId()))
                 .commit();
+
+        // TODO manage fragment backstack properly using mFragMan.Transaction.popBackStack()
 
         // Highlight the selected item has been done by NavigationView
         menuItem.setChecked(true);
@@ -237,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements MapsFragment.OnIt
         editor.apply();
     }
 
-    // Now we can define the action to take in the activity when the fragment event fires
+    // Now we can define the action to take in the activity when the map fragment event fires
     // This is implementing the `OnItemSelectedListener` interface methods
     @Override
     public void onViewCreatedCalled() {

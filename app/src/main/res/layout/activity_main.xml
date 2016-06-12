@@ -25,7 +25,7 @@
 
             <!-- The main content view where fragments are loaded -->
             <FrameLayout
-                android:id="@+id/flContent"
+                android:id="@+id/placeholder_for_fragments"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </LinearLayout>
@@ -41,18 +41,6 @@
             app:headerLayout="@layout/nav_header"
             app:menu="@menu/main_menu" />
     </android.support.v4.widget.DrawerLayout>
-
-    <!-- placeholder for map once it's instantiated -->
-    <FrameLayout
-        android:id="@+id/placeholder_for_fragments"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World"/>
-
 
 
 </RelativeLayout>
