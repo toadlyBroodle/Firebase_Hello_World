@@ -4,8 +4,12 @@ package ca.toadlybroodle.alternaterealitygames;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,12 +30,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 
-public class GoogleSignInActivity extends BaseSignInActivity implements
+public class GoogleSignInFragment extends BaseSignInFragment implements
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
 
     private static final String TAG = "FuckGooAct";
     private static final int RC_SIGN_IN = 9001;
+
+    private FragmentActivity parActiv;
 
     // [START declare_auth]
     private FirebaseAuth mAuth;
@@ -45,19 +51,29 @@ public class GoogleSignInActivity extends BaseSignInActivity implements
     private TextView mStatusTextView;
     private TextView mDetailTextView;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_google);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+
+        // get reference to parent activity for later use
+        parActiv = super.getActivity();
+
+        return inflater.inflate(R.layout.fragment_google_signin, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        //super.onViewCreated(view, savedInstanceState);
 
         // Views
-        mStatusTextView = (TextView) findViewById(R.id.status);
-        mDetailTextView = (TextView) findViewById(R.id.detail);
+        mStatusTextView = (TextView) parActiv.findViewById(R.id.status);
+        mDetailTextView = (TextView) parActiv.findViewById(R.id.detail);
 
         // Button listeners
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
-        findViewById(R.id.sign_out_button).setOnClickListener(this);
-        findViewById(R.id.disconnect_button).setOnClickListener(this);
+        parActiv.findViewById(R.id.sign_in_button).setOnClickListener(this);
+        parActiv.findViewById(R.id.sign_out_button).setOnClickListener(this);
+        parActiv.findViewById(R.id.disconnect_button).setOnClickListener(this);
 
         // [START config_signin]
         // Configure Google Sign In
@@ -67,8 +83,8 @@ public class GoogleSignInActivity extends BaseSignInActivity implements
                 .build();
         // [END config_signin]
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+        mGoogleApiClient = new GoogleApiClient.Builder(parActiv)
+                .enableAutoManage(parActiv /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
@@ -101,6 +117,7 @@ public class GoogleSignInActivity extends BaseSignInActivity implements
         };
         // [END auth_state_listener]
     }
+
 
     // [START on_start_add_listener]
     @Override
@@ -151,7 +168,7 @@ public class GoogleSignInActivity extends BaseSignInActivity implements
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(parActiv, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
@@ -161,7 +178,7 @@ public class GoogleSignInActivity extends BaseSignInActivity implements
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "signInWithCredential", task.getException());
-                            Toast.makeText(GoogleSignInActivity.this, "Authentication failed.",
+                            Toast.makeText(parActiv, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
                         // [START_EXCLUDE]
@@ -213,14 +230,14 @@ public class GoogleSignInActivity extends BaseSignInActivity implements
             mStatusTextView.setText(getString(R.string.google_status_fmt, user.getEmail()));
             mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
 
-            findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
+            parActiv.findViewById(R.id.sign_in_button).setVisibility(View.GONE);
+            parActiv.findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
         } else {
             mStatusTextView.setText(R.string.signed_out);
             mDetailTextView.setText(null);
 
-            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
-            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
+            parActiv.findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
+            parActiv.findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
         }
     }
 
@@ -229,7 +246,7 @@ public class GoogleSignInActivity extends BaseSignInActivity implements
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
-        Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(parActiv, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -272,9 +289,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-public class GoogleSignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class GoogleSignInFragment extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
-    private static final String TAG = "GoogleSignInActivity";
+    private static final String TAG = "GoogleSignInFragment";
     private static final int RC_SIGN_IN = 1;                    // request code, see: https://developer.android.com/training/basics/intents/result.html
     private GoogleApiClient mGoogleApiClient;
     private FirebaseAuth mAuth;
@@ -393,7 +410,7 @@ public class GoogleSignInActivity extends AppCompatActivity implements GoogleApi
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "signInWithCredential", task.getException());
-                            Toast.makeText(GoogleSignInActivity.this, "Authentication failed.",
+                            Toast.makeText(GoogleSignInFragment.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                         }
                         // If the call to signInWithCredential succeeds, the AuthStateListener runs the onAuthStateChanged callback.

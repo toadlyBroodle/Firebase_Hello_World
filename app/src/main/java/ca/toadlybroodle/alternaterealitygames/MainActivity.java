@@ -12,19 +12,21 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class MainActivity extends AppCompatActivity implements MapsFragment.OnItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements
+        MapsFragment.OnItemSelectedListener,
+        BaseSignInFragment.OnItemSelectedListener{
 
     private static final String TAG = "FuckMnAct";
     private static final String MY_PREFS_NAME = "MyPrefsFile";
 
     private static FragmentManager mFragMan;
+    private static Fragment lastActiveFragment;
     private static SupportMapFragment mMapFragment;
 
     private static FirebaseUser mFirebaseUser;
@@ -68,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements MapsFragment.OnIt
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         // if user not signed in, then start base sign in activity
         if (mFirebaseUser == null) {
-            Intent _BaseSignInActivity = new Intent(getApplicationContext(), BaseSignInActivity.class);
+            Intent _BaseSignInActivity = new Intent(getApplicationContext(), BaseSignInFragment.class);
             startActivity(_BaseSignInActivity);
         }
 
@@ -122,11 +124,11 @@ public class MainActivity extends AppCompatActivity implements MapsFragment.OnIt
 
     private void selectDrawerItem(MenuItem menuItem) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
-        Fragment fragment = null;
         Class fragmentClass = null;
         switch(menuItem.getItemId()) {
-            case R.id.menu_account:
-                // TODO show account page
+            case R.id.menu_profile:
+                // show profile page
+                fragmentClass = BaseSignInFragment.class;
                 break;
             case R.id.menu_location:
                 // take care of location permissions, settings, and updating
@@ -149,21 +151,8 @@ public class MainActivity extends AppCompatActivity implements MapsFragment.OnIt
                 fragmentClass = MainActivity.class;
         }
 
-        // if fragment is null, null pointer exception will be caught
-        try {
-            fragment = (Fragment) fragmentClass.newInstance();
-
-            // Insert the fragment by replacing any existing fragment
-            mFragMan.beginTransaction()
-                    .replace(R.id.placeholder_for_fragments, fragment)
-                    //.addToBackStack(Integer.toString(fragment.getId()))
-                    .commit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        if (fragment != null) {
+        // replace fragment, if successful handle navigation stuff
+        if (replaceFragment(fragmentClass)) {
 
             // Highlight the selected item has been done by NavigationView
             menuItem.setChecked(true);
@@ -173,6 +162,32 @@ public class MainActivity extends AppCompatActivity implements MapsFragment.OnIt
         }
 
         mDrawer.closeDrawers();
+    }
+
+    private boolean replaceFragment(Class fragClass) {
+        // try to destroy last active fragment to avoid id conflicts
+        try {
+           // mFragMan.beginTransaction().remove(lastActiveFragment).commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // try to replace fragment
+        Fragment frag;
+        try {
+            frag = (Fragment) fragClass.newInstance();
+
+            // Insert the fragment by replacing any existing fragment
+            mFragMan.beginTransaction()
+                    .replace(R.id.placeholder_for_fragments, frag)
+                    //.addToBackStack(Integer.toString(fragment.getId()))
+                    .commit();
+            // flag most recent fragment so can destroy it later
+            lastActiveFragment = frag;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     // `onPostCreate` called when activity start-up is complete after `onStart()`
@@ -216,11 +231,6 @@ public class MainActivity extends AppCompatActivity implements MapsFragment.OnIt
         }
     }
 
-    public void statusClicked(View view) {
-        Intent _BaseSignInActivity = new Intent(getApplicationContext(), BaseSignInActivity.class);
-        startActivity(_BaseSignInActivity);
-    }
-
     private void loadPreferences() {
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         String restoredText = prefs.getString("text", null);
@@ -252,4 +262,13 @@ public class MainActivity extends AppCompatActivity implements MapsFragment.OnIt
         }
     }
 
+    @Override
+    public void onGoogleSignInPushed() {
+        replaceFragment(GoogleSignInFragment.class);
+    }
+
+    @Override
+    public void onEmailSignInPushed() {
+        replaceFragment(EmailSignInFragment.class);
+    }
 }
