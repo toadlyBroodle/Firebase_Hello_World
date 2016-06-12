@@ -11,8 +11,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -138,8 +136,8 @@ public class MainActivity extends AppCompatActivity implements MapsFragment.OnIt
                 fragmentClass = MapsFragment.class;
                 break;
             case R.id.menu_settings:
-                Intent _SettingsActivity = new Intent(getApplicationContext(), SettingsActivity.class);
-                startActivity(_SettingsActivity);
+                Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(intent);
                 break;
             case R.id.menu_share:
                 // TODO send to share page
@@ -151,25 +149,29 @@ public class MainActivity extends AppCompatActivity implements MapsFragment.OnIt
                 fragmentClass = MainActivity.class;
         }
 
+        // if fragment is null, null pointer exception will be caught
         try {
             fragment = (Fragment) fragmentClass.newInstance();
+
+            // Insert the fragment by replacing any existing fragment
+            mFragMan.beginTransaction()
+                    .replace(R.id.placeholder_for_fragments, fragment)
+                    //.addToBackStack(Integer.toString(fragment.getId()))
+                    .commit();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        // Insert the fragment by replacing any existing fragment
-        mFragMan.beginTransaction()
-                .replace(R.id.placeholder_for_fragments, fragment)
-                .addToBackStack(Integer.toString(fragment.getId()))
-                .commit();
 
-        // TODO manage fragment backstack properly using mFragMan.Transaction.popBackStack()
+        if (fragment != null) {
 
-        // Highlight the selected item has been done by NavigationView
-        menuItem.setChecked(true);
-        // Set action bar title
-        setTitle(menuItem.getTitle());
-        // Close the navigation drawer
+            // Highlight the selected item has been done by NavigationView
+            menuItem.setChecked(true);
+            // Set action bar title
+            setTitle(menuItem.getTitle());
+            // Close the navigation drawer
+        }
+
         mDrawer.closeDrawers();
     }
 
