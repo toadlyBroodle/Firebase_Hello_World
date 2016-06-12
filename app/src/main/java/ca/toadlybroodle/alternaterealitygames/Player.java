@@ -4,10 +4,10 @@ import android.util.Log;
 
 public class Player {
 
-    public String mFirebaseID;
-    public String mAlias;
-    public int mReputationPts;
-    public int mStreetCredPts;
+    private final String mFirebaseID;
+    private final String mAlias;
+    private int mReputationPts;
+    private int mStreetCredPts;
 
     public Player(String id, String al, int rep, int stc) {
         mFirebaseID = id;

@@ -60,64 +60,64 @@ public class LocationFragment extends Fragment implements
         ResultCallback<LocationSettingsResult>,
         View.OnClickListener {
 
-    protected static final String TAG = "FuckMnAct";
+    private static final String TAG = "FuckMnAct";
 
-    protected static FragmentActivity parActiv;
+    private static FragmentActivity parActiv;
 
     // Constant used in the location settings dialog.
-    protected static final int REQUEST_CHECK_LOCATION_SETTINGS = 0x1;
+    private static final int REQUEST_CHECK_LOCATION_SETTINGS = 0x1;
 
 
     // The desired interval for location updates. Inexact. Updates may be more or less frequent.
-    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 5000;
+    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 5000;
 
     // The fastest rate for active location updates. Exact. Updates will never be more frequent than this value.
-    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
+    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
     // Keys for storing activity state in the Bundle.
-    protected final static String KEY_REQUESTING_LOCATION_UPDATES = "requesting-location-updates";
-    protected final static String KEY_LOCATION = "location";
-    protected final static String KEY_LAST_UPDATED_TIME_STRING = "last-updated-time-string";
+    private final static String KEY_REQUESTING_LOCATION_UPDATES = "requesting-location-updates";
+    private final static String KEY_LOCATION = "location";
+    private final static String KEY_LAST_UPDATED_TIME_STRING = "last-updated-time-string";
 
     // Provides the entry point to Google Play services.
-    protected GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient mGoogleApiClient;
 
 
     // Stores parameters for requests to the FusedLocationProviderApi.
-    protected LocationRequest mLocationRequest;
+    private LocationRequest mLocationRequest;
 
     // Stores the types of location services the client is interested in using. Used for checking
     //settings to determine if the device has optimal location settings.
-    protected LocationSettingsRequest mLocationSettingsRequest;
+    private LocationSettingsRequest mLocationSettingsRequest;
 
     // Represents a geographical location.
-    protected Location mCurrentLocation;
+    private Location mCurrentLocation;
 
     // UI Widgets.
-    protected Button mStartUpdatesButton;
-    protected Button mStopUpdatesButton;
-    protected TextView mLastUpdateTimeTextView;
-    protected TextView mLatitudeTextView;
-    protected TextView mLongitudeTextView;
+    private Button mStartUpdatesButton;
+    private Button mStopUpdatesButton;
+    private TextView mLastUpdateTimeTextView;
+    private TextView mLatitudeTextView;
+    private TextView mLongitudeTextView;
 
     // Labels.
-    protected String mLatitudeLabel;
-    protected String mLongitudeLabel;
-    protected String mLastUpdateTimeLabel;
+    private String mLatitudeLabel;
+    private String mLongitudeLabel;
+    private String mLastUpdateTimeLabel;
 
 
     /**
      * Tracks the status of the location updates request. Value changes when the user presses the
      * Start Updates and Stop Updates buttons.
      */
-    protected Boolean mRequestingLocationUpdates;
+    private Boolean mRequestingLocationUpdates;
     // location permission status
 
     /**
      * Time when the location was updated represented as a String.
      */
-    protected String mLastUpdateTime;
+    private String mLastUpdateTime;
 
     @Nullable
     @Override
@@ -199,7 +199,7 @@ public class LocationFragment extends Fragment implements
      * Builds a GoogleApiClient. Uses the {@code #addApi} method to request the
      * LocationServices API.
      */
-    protected synchronized void buildGoogleApiClient() {
+    private synchronized void buildGoogleApiClient() {
         Log.i(TAG, "Building GoogleApiClient");
         mGoogleApiClient = new GoogleApiClient.Builder(parActiv)
                 .addConnectionCallbacks(this)
@@ -221,7 +221,7 @@ public class LocationFragment extends Fragment implements
      * These settings are appropriate for mapping applications that show real-time location
      * updates.
      */
-    protected void createLocationRequest() {
+    private void createLocationRequest() {
         mLocationRequest = new LocationRequest();
 
         // Sets the desired interval for active location updates. This interval is
@@ -242,7 +242,7 @@ public class LocationFragment extends Fragment implements
      * a {@link com.google.android.gms.location.LocationSettingsRequest} that is used for checking
      * if a device has the needed location settings.
      */
-    protected void buildLocationSettingsRequest() {
+    private void buildLocationSettingsRequest() {
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         builder.addLocationRequest(mLocationRequest);
         mLocationSettingsRequest = builder.build();
@@ -253,7 +253,7 @@ public class LocationFragment extends Fragment implements
      * {@link com.google.android.gms.location.SettingsApi#checkLocationSettings(GoogleApiClient,
      * LocationSettingsRequest)} method, with the results provided through a {@code PendingResult}.
      */
-    protected void checkLocationSettings() {
+    private void checkLocationSettings() {
         PendingResult<LocationSettingsResult> result =
                 LocationServices.SettingsApi.checkLocationSettings(
                         mGoogleApiClient,
@@ -350,7 +350,7 @@ public class LocationFragment extends Fragment implements
     /**
      * Requests location updates from the FusedLocationApi.
      */
-    protected void startLocationUpdates() {
+    private void startLocationUpdates() {
 
         // make sure has fine and coarse location permissions before requesting location updates
         if (ActivityCompat.checkSelfPermission(parActiv, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -414,7 +414,7 @@ public class LocationFragment extends Fragment implements
     /**
      * Removes location updates from the FusedLocationApi.
      */
-    protected void stopLocationUpdates() {
+    private void stopLocationUpdates() {
         // It is a good practice to remove location requests when the activity is in a paused or
         // stopped state. Doing so helps battery performance and is especially
         // recommended in applications that request frequent location updates.

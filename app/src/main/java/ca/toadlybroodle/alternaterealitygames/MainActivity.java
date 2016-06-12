@@ -23,10 +23,10 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity implements MapsFragment.OnItemSelectedListener {
 
-    public static final String TAG = "FuckMnAct";
-    public static final String MY_PREFS_NAME = "MyPrefsFile";
+    private static final String TAG = "FuckMnAct";
+    private static final String MY_PREFS_NAME = "MyPrefsFile";
 
-    public static FragmentManager mFragMan;
+    private static FragmentManager mFragMan;
     private static SupportMapFragment mMapFragment;
 
     private static FirebaseUser mFirebaseUser;
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements MapsFragment.OnIt
                 });
     }
 
-    public void selectDrawerItem(MenuItem menuItem) {
+    private void selectDrawerItem(MenuItem menuItem) {
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Fragment fragment = null;
         Class fragmentClass = null;
@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements MapsFragment.OnIt
         startActivity(_BaseSignInActivity);
     }
 
-    public void loadPreferences() {
+    private void loadPreferences() {
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         String restoredText = prefs.getString("text", null);
         if (restoredText != null) {
@@ -226,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements MapsFragment.OnIt
         }
     }
 
-    public void savePreferences() {
+    private void savePreferences() {
 
         // in case firebase user is null
         final String fbId = (mFirebaseUser == null)? null: mFirebaseUser.getUid();

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.google.firebase.auth.FirebaseUser;
 
 public class BaseSignInActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -42,7 +41,7 @@ public class BaseSignInActivity extends AppCompatActivity implements View.OnClic
 
     }
 
-    public void showProgressDialog() {
+    protected void showProgressDialog() {
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(this);
             mProgressDialog.setMessage(getString(R.string.loading));
@@ -52,7 +51,7 @@ public class BaseSignInActivity extends AppCompatActivity implements View.OnClic
         mProgressDialog.show();
     }
 
-    public void hideProgressDialog() {
+    protected void hideProgressDialog() {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.hide();
         }
