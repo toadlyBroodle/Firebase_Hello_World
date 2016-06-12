@@ -12,8 +12,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
         addPreferencesFromResource(R.xml.settings);
 
-        // show up navigation caret, TODO null pointer exeption because app has no app bar
-        //getActionBar().setDisplayHomeAsUpEnabled(true);
+        // show up navigation caret
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     // navigate up to parent activity on up button pressed

@@ -83,6 +83,7 @@ public class GoogleSignInFragment extends BaseSignInFragment implements
                 .build();
         // [END config_signin]
 
+        // TODO causes crash when starting more than one api client with same id
         mGoogleApiClient = new GoogleApiClient.Builder(parActiv)
                 .enableAutoManage(parActiv /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
