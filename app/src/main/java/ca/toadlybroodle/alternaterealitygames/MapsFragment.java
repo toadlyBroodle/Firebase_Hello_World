@@ -1,5 +1,6 @@
 package ca.toadlybroodle.alternaterealitygames;
 
+import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -10,30 +11,56 @@ import android.view.ViewGroup;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private FragmentActivity parActiv;
-    private View mapsLayout;
     private GoogleMap mMap;
+
+    // Define the listener of the interface type
+    // listener will the activity instance containing fragment
+    private OnItemSelectedListener listener;
+
+    // Define the events that the fragment will use to communicate
+    public interface OnItemSelectedListener {
+        // This can be any number of events to be sent to the activity
+        void onViewCreatedCalled();
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
+        // get reference to parent activity for later use
         parActiv = super.getActivity();
-        mapsLayout = inflater.inflate(R.layout.fragment_maps, container, false);
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) parActiv.getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        return inflater.inflate(R.layout.fragment_maps, container, false);
+    }
 
-        return mapsLayout;
+    // This event is triggered soon after onCreateView().
+    // Any view setup should occur here.  E.g., view lookups and attaching view listeners.
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // Setup any handles to view objects here
+
+        listener.onViewCreatedCalled();
+
+    }
+
+    // Store the listener (activity) that will have events fired once the fragment is attached
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnItemSelectedListener) {
+            listener = (OnItemSelectedListener) context;
+        } else {
+            throw new ClassCastException(context.toString()
+                    + " must implement MyListFragment.OnItemSelectedListener");
+        }
     }
 
     /**

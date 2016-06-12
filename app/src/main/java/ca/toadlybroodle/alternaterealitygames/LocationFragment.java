@@ -17,7 +17,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,7 +63,6 @@ public class LocationFragment extends Fragment implements
     protected static final String TAG = "FuckMnAct";
 
     protected static FragmentActivity parActiv;
-    protected static LinearLayout locationLayout;
 
     // Constant used in the location settings dialog.
     protected static final int REQUEST_CHECK_LOCATION_SETTINGS = 0x1;
@@ -126,8 +124,25 @@ public class LocationFragment extends Fragment implements
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
+        // get handle to parent activity
         parActiv = super.getActivity();
-        locationLayout    = (LinearLayout) inflater.inflate(R.layout.fragment_location, container, false);
+
+        // Set labels.
+        mLatitudeLabel = getResources().getString(R.string.latitude_label);
+        mLongitudeLabel = getResources().getString(R.string.longitude_label);
+        mLastUpdateTimeLabel = getResources().getString(R.string.last_update_time_label);
+        mRequestingLocationUpdates = false;
+        mLastUpdateTime = "";
+
+        return inflater.inflate(R.layout.fragment_location, container, false);
+    }
+
+    // This event is triggered soon after onCreateView().
+    // Any view setup should occur here.  E.g., view lookups and attaching view listeners.
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // Setup any handles to view objects here
 
         parActiv.findViewById(R.id.start_updates_button).setOnClickListener(this);
         parActiv.findViewById(R.id.stop_updates_button).setOnClickListener(this);
@@ -139,14 +154,6 @@ public class LocationFragment extends Fragment implements
         mLongitudeTextView = (TextView) parActiv.findViewById(R.id.longitude_text);
         mLastUpdateTimeTextView = (TextView) parActiv.findViewById(R.id.last_update_time_text);
 
-        // Set labels.
-        mLatitudeLabel = getResources().getString(R.string.latitude_label);
-        mLongitudeLabel = getResources().getString(R.string.longitude_label);
-        mLastUpdateTimeLabel = getResources().getString(R.string.last_update_time_label);
-
-        mRequestingLocationUpdates = false;
-        mLastUpdateTime = "";
-
         // Update values using data stored in the Bundle.
         updateValuesFromBundle(savedInstanceState);
 
@@ -156,7 +163,6 @@ public class LocationFragment extends Fragment implements
         createLocationRequest();
         buildLocationSettingsRequest();
 
-        return locationLayout;
     }
 
     /**

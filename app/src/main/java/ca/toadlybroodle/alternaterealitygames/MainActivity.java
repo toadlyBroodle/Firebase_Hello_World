@@ -16,18 +16,21 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MapsFragment.OnItemSelectedListener {
 
     public static final String TAG = "FuckMnAct";
     public static final String MY_PREFS_NAME = "MyPrefsFile";
 
+    public static FragmentManager mFragMan;
+    private static SupportMapFragment mMapFragment;
+
     private static FirebaseUser mFirebaseUser;
     private static Player mPlayer;
-
-    private static LocationFragment mLocationActivity;
 
     /** drawer implementation copied from example at https://github.com/codepath/android_guides/wiki/Fragment-Navigation-Drawer */
     private DrawerLayout mDrawer;
@@ -39,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mFragMan = getSupportFragmentManager();
+
+        mMapFragment = (SupportMapFragment) mFragMan.findFragmentById(R.id.placeholder_for_fragments);
 
         // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -85,10 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (drawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return drawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
 /*    @Override
@@ -145,18 +149,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
             default:
                 fragmentClass = MainActivity.class;
-
-/**            case R.id.nav_first_fragment:
-                fragmentClass = FirstFragment.class;
-                break;
-            case R.id.nav_second_fragment:
-                fragmentClass = SecondFragment.class;
-                break;
-            case R.id.nav_third_fragment:
-                fragmentClass = ThirdFragment.class;
-                break;
-            default:
-                fragmentClass = FirstFragment.class; */
         }
 
         try {
@@ -166,9 +158,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.flContent, fragment)
+        mFragMan.beginTransaction()
+                .replace(R.id.placeholder_for_fragments, fragment)
                 .addToBackStack(Integer.toString(fragment.getId()))
                 .commit();
 
@@ -243,7 +234,18 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
         editor.putString("alias", "Elena");
         editor.putString("firebase_id", fbId);
-        editor.commit();
+        editor.apply();
+    }
+
+    // Now we can define the action to take in the activity when the fragment event fires
+    // This is implementing the `OnItemSelectedListener` interface methods
+    @Override
+    public void onViewCreatedCalled() {
+        if (mMapFragment != null && mMapFragment.isInLayout()) {
+            // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+            mMapFragment = (SupportMapFragment) mFragMan.findFragmentById(R.id.map);
+            mMapFragment.getMapAsync((OnMapReadyCallback) mMapFragment);
+        }
     }
 
 }
