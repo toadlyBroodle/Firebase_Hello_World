@@ -153,12 +153,6 @@ public class MainActivity extends AppCompatActivity implements FragmentListenerI
                 Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
                 startActivity(intent);
                 break;
-            case R.id.menu_share:
-                // TODO send to share page
-                break;
-            case R.id.menu_rate:
-                // TODO send to ratings page
-                break;
             default:
                 fragmentClass = MainActivity.class;
         }

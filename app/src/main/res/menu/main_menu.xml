@@ -17,11 +17,6 @@
     <item android:id="@+id/menu_settings"
         android:title="@string/menu_settings"
         app:showAsAction="never"/>
-    <item android:id="@+id/menu_share"
-        android:title="@string/menu_share"
-        app:showAsAction="never"/>
-    <item android:id="@+id/menu_rate"
-        android:title="@string/menu_rate"
-        app:showAsAction="never"/>
+
 
 </menu>
