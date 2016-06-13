@@ -18,6 +18,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+/**
+ * TODO
+ * -save/retrieve profile info to/from realtime database
+ * -keep player current location updated in realtime database
+ */
+
+
 public class MainActivity extends AppCompatActivity implements
         MapsFragment.OnItemSelectedListener,
         BaseSignInFragment.OnItemSelectedListener{

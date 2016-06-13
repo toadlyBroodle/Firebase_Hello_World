@@ -50,7 +50,7 @@
         <item name="android:actionBarStyle">@style/SettingsActionBar</item>
     </style>
 
-    <!-- set action bar's background to match rest of app themes -->
+    <!-- set action bar's background to match rest of app themes TODO not working -->
     <style name="SettingsActionBar" parent="@android:style/Widget.ActionBar">
         <item name="android:background">@color/colorPrimary</item>
     </style>
