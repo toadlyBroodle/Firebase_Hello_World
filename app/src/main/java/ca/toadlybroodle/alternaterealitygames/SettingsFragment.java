@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 
 public class SettingsFragment extends PreferenceFragment {
 
+    private static final String TAG = "FuckSetsFrag";
+
     private ListPreference mListPreference;
 
 

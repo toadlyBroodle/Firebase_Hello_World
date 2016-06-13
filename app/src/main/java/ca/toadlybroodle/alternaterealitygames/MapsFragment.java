@@ -25,18 +25,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
+    private static final String TAG = "FuckMapFrag";
+
     private FragmentActivity parActiv;
     private GoogleMap mMap;
 
-    // Define the listener of the interface type
-    // listener will the activity instance containing fragment
-    private OnItemSelectedListener listener;
+    // listener will notify main activity about things it needs to know about
+    private FragmentListenerInterface listener;
 
-    // Define the events that the fragment will use to communicate
-    public interface OnItemSelectedListener {
-        // This can be any number of events to be sent to the activity
-        void onViewCreatedCalled();
-    }
 
     @Nullable
     @Override
@@ -56,7 +52,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState);
         // Setup any handles to view objects here
 
-        listener.onViewCreatedCalled();
+        listener.onFragmentButtonPushed(view);
 
     }
 
@@ -64,11 +60,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnItemSelectedListener) {
-            listener = (OnItemSelectedListener) context;
+        if (context instanceof FragmentListenerInterface) {
+            listener = (FragmentListenerInterface) context;
         } else {
             throw new ClassCastException(context.toString()
-                    + " must implement MyListFragment.OnItemSelectedListener");
+                    + " must implement FragmentListenerInterface");
         }
     }
 

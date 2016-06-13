@@ -34,7 +34,7 @@ public class GoogleSignInFragment extends BaseSignInFragment implements
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
 
-    private static final String TAG = "FuckGooAct";
+    private static final String TAG = "FuckGooSigninFrag";
     private static final int RC_SIGN_IN = 9001;
 
     private FragmentActivity parActiv;

@@ -11,12 +11,19 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 /**
  * TODO
@@ -25,9 +32,7 @@ import com.google.firebase.auth.FirebaseUser;
  */
 
 
-public class MainActivity extends AppCompatActivity implements
-        MapsFragment.OnItemSelectedListener,
-        BaseSignInFragment.OnItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements FragmentListenerInterface {
 
     private static final String TAG = "FuckMnAct";
     private static final String MY_PREFS_NAME = "MyPrefsFile";
@@ -36,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements
     private static Fragment lastActiveFragment;
     private static SupportMapFragment mMapFragment;
 
+    private static FirebaseDatabase mFirebaseDatabase;
+    private static DatabaseReference myRef;
     private static FirebaseUser mFirebaseUser;
     private static Player mPlayer;
 
@@ -50,9 +57,9 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /** setup fragment management stuff */
         mFragMan = getSupportFragmentManager();
-
-        mMapFragment = (SupportMapFragment) mFragMan.findFragmentById(R.id.placeholder_for_fragments);
+//        mMapFragment = (SupportMapFragment) mFragMan.findFragmentById(R.id.placeholder_for_fragments);
 
         // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -73,28 +80,24 @@ public class MainActivity extends AppCompatActivity implements
         // get handel to header layout
         //View headerLayout = navigationView.getHeaderView(0);
 
+
+        /** firebase stuff */
+        // get database instance
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
         // check for signed in user
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         // if user not signed in, then start base sign in activity
         if (mFirebaseUser == null) {
             replaceFragment(BaseSignInFragment.class);
         }
+        myRef = mFirebaseDatabase.getReference("message");
 
-
-        // TODO load player here
 
     }
 
     private ActionBarDrawerToggle setupDrawerToggle() {
         return new ActionBarDrawerToggle(this, mDrawer, toolbar, R.string.drawer_open,  R.string.drawer_close);
     }
-
-/*    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
-    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -135,6 +138,9 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.menu_profile:
                 // show profile page
                 fragmentClass = BaseSignInFragment.class;
+                break;
+            case R.id.menu_database:
+                fragmentClass = DatabaseFragment.class;
                 break;
             case R.id.menu_location:
                 // take care of location permissions, settings, and updating
@@ -257,10 +263,9 @@ public class MainActivity extends AppCompatActivity implements
         editor.apply();
     }
 
-    // Now we can define the action to take in the activity when the map fragment event fires
-    // This is implementing the `OnItemSelectedListener` interface methods
+    // fires when associated method from FragmentListenerInterface is called
     @Override
-    public void onViewCreatedCalled() {
+    public void onMapViewCreatedCalled() {
         if (mMapFragment != null && mMapFragment.isInLayout()) {
             // Obtain the SupportMapFragment and get notified when the map is ready to be used.
             mMapFragment = (SupportMapFragment) mFragMan.findFragmentById(R.id.map);
@@ -268,13 +273,44 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    // fires when associated method from FragmentListenerInterface is called
     @Override
-    public void onGoogleSignInPushed() {
-        replaceFragment(GoogleSignInFragment.class);
+    public void onFragmentButtonPushed(View view) {
+        switch (view.getId()) {
+            case R.id.base_google_sign_in_button:
+                replaceFragment(GoogleSignInFragment.class);
+                break;
+
+            case R.id.base_email_sign_in_button:
+                replaceFragment(EmailSignInFragment.class);
+                break;
+
+            case R.id.write_database_button:
+                Log.d(TAG, "Write to Database called");
+                // Write a message to the database
+                myRef.setValue("Hello, World!");
+                break;
+
+            case R.id.read_database_button:
+                Log.d(TAG, "Read from Database called");
+                // Read from the database
+                myRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        // This method is called once with the initial value and again
+                        // whenever data at this location is updated.
+                        String value = dataSnapshot.getValue(String.class);
+                        Log.d(TAG, "Value is: " + value);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        // Failed to read value
+                        Log.w(TAG, "Failed to read value.", error.toException());
+                    }
+                });
+                break;
+        }
     }
 
-    @Override
-    public void onEmailSignInPushed() {
-        replaceFragment(EmailSignInFragment.class);
-    }
 }

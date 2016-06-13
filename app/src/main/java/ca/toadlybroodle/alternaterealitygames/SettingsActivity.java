@@ -6,6 +6,8 @@ import android.view.MenuItem;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
+    private static final String TAG = "FuckSetsAct";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -5,6 +5,9 @@
     <item android:id="@+id/menu_profile"
         android:title="@string/menu_profile"
         app:showAsAction="never"/>
+    <item android:id="@+id/menu_database"
+        android:title="@string/menu_database"
+        app:showAsAction="never" />
     <item android:id="@+id/menu_location"
         android:title="@string/menu_location"
         app:showAsAction="never"/>

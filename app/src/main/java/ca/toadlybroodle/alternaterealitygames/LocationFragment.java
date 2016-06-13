@@ -60,7 +60,7 @@ public class LocationFragment extends Fragment implements
         ResultCallback<LocationSettingsResult>,
         View.OnClickListener {
 
-    private static final String TAG = "FuckMnAct";
+    private static final String TAG = "FuckLocFrag";
 
     private static FragmentActivity parActiv;
 

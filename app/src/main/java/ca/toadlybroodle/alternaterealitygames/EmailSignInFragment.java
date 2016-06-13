@@ -22,7 +22,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class EmailSignInFragment extends BaseSignInFragment implements
         View.OnClickListener {
 
-    private static final String TAG = "EmailPassword";
+    private static final String TAG = "FuckEmailSigninFrag";
 
     private FragmentActivity parActiv;
 
