@@ -7,13 +7,11 @@
         android:id="@+id/write_database_button"
         android:text="Write to Database"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClick" />
+        android:layout_height="wrap_content" />
     <Button
         android:id="@+id/read_database_button"
         android:text="Read from Database"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClick" />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

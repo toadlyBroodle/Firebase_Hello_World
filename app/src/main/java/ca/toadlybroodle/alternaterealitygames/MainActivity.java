@@ -38,13 +38,12 @@ public class MainActivity extends AppCompatActivity implements FragmentListenerI
     private static final String MY_PREFS_NAME = "MyPrefsFile";
 
     private static FragmentManager mFragMan;
-    private static Fragment lastActiveFragment;
     private static SupportMapFragment mMapFragment;
 
     private static FirebaseDatabase mFirebaseDatabase;
     private static DatabaseReference myRef;
     private static FirebaseUser mFirebaseUser;
-    private static Player mPlayer;
+    //private static Player mPlayer;
 
     /** drawer implementation copied from example at https://github.com/codepath/android_guides/wiki/Fragment-Navigation-Drawer */
     private DrawerLayout mDrawer;
@@ -59,8 +58,8 @@ public class MainActivity extends AppCompatActivity implements FragmentListenerI
 
         /** setup fragment management stuff */
         mFragMan = getSupportFragmentManager();
-//        mMapFragment = (SupportMapFragment) mFragMan.findFragmentById(R.id.placeholder_for_fragments);
 
+        /** navigation drawer stuff */
         // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -103,22 +102,6 @@ public class MainActivity extends AppCompatActivity implements FragmentListenerI
     public boolean onOptionsItemSelected(MenuItem item) {
         return drawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
-
-/*    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // ensure
-        if (drawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        // The action bar home/up action should open or close the drawer.
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                mDrawer.openDrawer(GravityCompat.START);
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
 
     private void setupDrawerContent(NavigationView navigationView) {
         navigationView.setNavigationItemSelectedListener(
@@ -171,12 +154,6 @@ public class MainActivity extends AppCompatActivity implements FragmentListenerI
     }
 
     private boolean replaceFragment(Class fragClass) {
-        // try to destroy last active fragment to avoid id conflicts TODO need this?
-/*        try {
-            mFragMan.beginTransaction().remove(lastActiveFragment).commit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
         // try to replace fragment
         Fragment frag;
         try {
@@ -187,8 +164,6 @@ public class MainActivity extends AppCompatActivity implements FragmentListenerI
                     .replace(R.id.placeholder_for_fragments, frag)
                     //.addToBackStack(Integer.toString(fragment.getId()))
                     .commit();
-            // flag most recent fragment so can destroy it later
-            lastActiveFragment = frag;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -217,8 +192,6 @@ public class MainActivity extends AppCompatActivity implements FragmentListenerI
         super.onResume();
 
         loadPreferences();
-
-
     }
 
 
@@ -237,6 +210,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListenerI
         }
     }
 
+    // placeholder for loading future shared preferences
     private void loadPreferences() {
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         String restoredText = prefs.getString("text", null);
@@ -246,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListenerI
         }
     }
 
+    // placeholder for saving future shared preferences
     private void savePreferences() {
 
         // in case firebase user is null
