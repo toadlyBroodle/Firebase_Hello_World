@@ -14,14 +14,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-/**
- * TODO
- * -zoom map to player's location
- *     -need correct googleApi?
- * -show player location on map
- * -move map around player's heading
- *     -i.e. player is always in center of screen with current heading pointed straight up and map rotates around as heading is changed
- */
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
 

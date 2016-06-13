@@ -25,12 +25,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-/**
- * TODO
- * -save/retrieve profile info to/from realtime database
- * -keep player current location updated in realtime database
- */
-
 
 public class MainActivity extends AppCompatActivity implements FragmentListenerInterface {
 
@@ -43,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements FragmentListenerI
     private static FirebaseDatabase mFirebaseDatabase;
     private static DatabaseReference myRef;
     private static FirebaseUser mFirebaseUser;
-    //private static Player mPlayer;
 
     /** drawer implementation copied from example at https://github.com/codepath/android_guides/wiki/Fragment-Navigation-Drawer */
     private DrawerLayout mDrawer;
@@ -206,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListenerI
         mFirebaseUser = user;
 
         if (mFirebaseUser != null) {
-            // TODO try loading player, if no player found then create a new one
+            // TODO do stuff here with user
         }
     }
 

@@ -79,7 +79,7 @@ public class EmailSignInFragment extends BaseSignInFragment implements
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
 
-                    // TODO pass signed in user to main activity
+                    // pass signed in user to main activity
                     MainActivity.setFireBaseUser(user);
 
                 } else {
