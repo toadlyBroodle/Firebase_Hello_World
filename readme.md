@@ -15,8 +15,4 @@ Follow [Firebase Android guides](https://github.com/firebase/quickstart-android)
   - For Google Maps, this includes replacing the google maps api keys at app/src/debug/res/values/google-maps-api.xml and app/src/release/res/values/google-maps-api.xml
   
 # Screenshot
-<<<<<<< HEAD
 ![firebase hello world screenshot](/firebase-hello-world-screenshot.png?raw=true "Firebase hello world android app")
-=======
-![firebase hello world screenshot](/relative/path/to/img.jpg?raw=true "Firebase hello world android app")
->>>>>>> ff8e66e80e3d29bf8cbc211cabf302b684679f94
